@@ -1,0 +1,16 @@
+code-snippet-manager/
+├── index.html
+├── styles.css
+├── prism.css
+├── prism.js
+├── ts/
+│   ├── types.ts
+│   ├── StorageManager.ts
+│   ├── UIManager.ts
+│   ├── ExportManager.ts
+│   ├── SearchManager.ts
+│   └── main.ts
+├── dist/
+│   └── main.js
+├── tsconfig.json
+└── README.md

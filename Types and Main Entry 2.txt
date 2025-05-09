@@ -1,0 +1,8 @@
+// ts/main.ts
+import { StorageManager } from './StorageManager';
+import { UIManager } from './UIManager';
+
+document.addEventListener('DOMContentLoaded', () => {
+    const storage = new StorageManager();
+    const ui = new UIManager(storage);
+});

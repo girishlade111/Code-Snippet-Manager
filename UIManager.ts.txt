@@ -1,0 +1,106 @@
+// ts/UIManager.ts
+import { Snippet } from './types';
+import { ExportManager } from './ExportManager';
+
+export class UIManager {
+    private storage: StorageManager;
+    private exportManager: ExportManager;
+
+    constructor(storage: StorageManager) {
+        this.storage = storage;
+        this.exportManager = new ExportManager();
+        this.init();
+    }
+
+    private init(): void {
+        this.renderSnippets();
+        this.setupEventListeners();
+    }
+
+    private setupEventListeners(): void {
+        const form = document.getElementById('snippet-form') as HTMLFormElement;
+        form.addEventListener('submit', this.handleFormSubmit.bind(this));
+
+        const searchInput = document.getElementById('search-input') as HTMLInputElement;
+        searchInput.addEventListener('input', this.handleSearch.bind(this));
+
+        const exportBtn = document.getElementById('export-btn');
+        exportBtn?.addEventListener('click', () => {
+            const id = (exportBtn as HTMLElement).dataset.id;
+            if (id) {
+                const snippet = this.storage.getSnippetById(id);
+                if (snippet) this.exportManager.exportSnippet(snippet);
+            }
+        });
+    }
+
+    private handleFormSubmit(e: Event): void {
+        e.preventDefault();
+        const form = e.target as HTMLFormElement;
+        const formData = new FormData(form);
+        const title = formData.get('title') as string;
+        const description = formData.get('description') as string;
+        const code = formData.get('code') as string;
+        const language = formData.get('language') as string;
+        const tags = (formData.get('tags') as string).split(',').map(t => t.trim());
+
+        const snippet: Omit<Snippet, 'id'> = { title, description, code, language, tags };
+        this.storage.addSnippet(snippet);
+        this.renderSnippets();
+        form.reset();
+    }
+
+    private handleSearch(e: Event): void {
+        const query = (e.target as HTMLInputElement).value.toLowerCase();
+        const filtered = this.storage.getAllSnippets().filter(snippet =>
+            snippet.title.toLowerCase().includes(query) ||
+            snippet.tags.some(tag => tag.toLowerCase().includes(query)) ||
+            snippet.code.toLowerCase().includes(query) ||
+            snippet.description.toLowerCase().includes(query)
+        );
+        this.renderSnippets(filtered);
+    }
+
+    public renderSnippets(snippets = this.storage.getAllSnippets()): void {
+        const container = document.getElementById('snippet-list');
+        if (!container) return;
+        container.innerHTML = '';
+
+        snippets.forEach(snippet => {
+            const card = document.createElement('article');
+            card.className = 'snippet-card';
+            card.innerHTML = `
+                <h3>${snippet.title}</h3>
+                <p>${snippet.description}</p>
+                <div>Language: ${snippet.language}</div>
+                <div>Tags: ${snippet.tags.join(', ')}</div>
+                <button class="view-btn" data-id="${snippet.id}">View</button>
+            `;
+            container.appendChild(card);
+        });
+
+        this.attachViewHandlers();
+    }
+
+    private attachViewHandlers(): void {
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                if (id) {
+                    const snippet = this.storage.getSnippetById(id);
+                    if (snippet) this.displaySnippet(snippet);
+                }
+            });
+        });
+    }
+
+    private displaySnippet(snippet: Snippet): void {
+        const codeElement = document.getElementById('snippet-code') as HTMLElement;
+        codeElement.textContent = snippet.code;
+        codeElement.className = `language-${snippet.language}`;
+        Prism.highlightElement(codeElement);
+
+        const exportBtn = document.getElementById('export-btn') as HTMLElement;
+        exportBtn.dataset.id = snippet.id;
+    }
+}

@@ -1,0 +1,71 @@
+// ts/StorageManager.ts
+import { Snippet } from './types';
+
+export class StorageManager {
+    private STORAGE_KEY = 'snippets';
+
+    constructor() {
+        this.initializeSampleData();
+    }
+
+    private getSnippets(): Snippet[] {
+        const data = localStorage.getItem(this.STORAGE_KEY);
+        return data ? JSON.parse(data) : [];
+    }
+
+    public saveSnippets(snippets: Snippet[]): void {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(snippets));
+    }
+
+    public getAllSnippets(): Snippet[] {
+        return this.getSnippets();
+    }
+
+    public getSnippetById(id: string): Snippet | undefined {
+        return this.getAllSnippets().find(snippet => snippet.id === id);
+    }
+
+    public addSnippet(snippet: Omit<Snippet, 'id'>): string {
+        const id = Date.now().toString();
+        const newSnippet = { ...snippet, id };
+        this.saveSnippets([...this.getAllSnippets(), newSnippet]);
+        return id;
+    }
+
+    public updateSnippet(id: string, updatedFields: Partial<Snippet>): void {
+        const updatedSnippets = this.getAllSnippets().map(snippet =>
+            snippet.id === id ? { ...snippet, ...updatedFields } : snippet
+        );
+        this.saveSnippets(updatedSnippets);
+    }
+
+    public deleteSnippet(id: string): void {
+        const filtered = this.getAllSnippets().filter(snippet => snippet.id !== id);
+        this.saveSnippets(filtered);
+    }
+
+    private initializeSampleData(): void {
+        const data = this.getSnippets();
+        if (data.length === 0) {
+            const sample: Snippet[] = [
+                {
+                    id: '1',
+                    title: 'Fibonacci Sequence',
+                    description: 'Generate Fibonacci numbers in Python',
+                    code: 'def fibonacci(n):\n    a, b = 0, 1\n    result = []\n    while a < n:\n        result.append(a)\n        a, b = b, a+b\n    return result\n\nprint(fibonacci(100))',
+                    language: 'python',
+                    tags: ['Python', 'Algorithms']
+                },
+                {
+                    id: '2',
+                    title: 'Hello World',
+                    description: 'Basic HTML page with a message',
+                    code: '<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <title>Hello</title>\n</head>\n<body>\n    <h1>Hello, World!</h1>\n</body>\n</html>',
+                    language: 'markup',
+                    tags: ['HTML', 'Basics']
+                }
+            ];
+            this.saveSnippets(sample);
+        }
+    }
+}

@@ -1,0 +1,16 @@
+// ts/SearchManager.ts
+import { Snippet } from './types';
+
+export class SearchManager {
+    public static filterSnippets(snippets: Snippet[], query: string, tags: string[]): Snippet[] {
+        const lowerQuery = query.toLowerCase();
+        return snippets.filter(snippet => {
+            const matchesQuery = snippet.title.toLowerCase().includes(lowerQuery) ||
+                snippet.code.toLowerCase().includes(lowerQuery) ||
+                snippet.tags.some(tag => tag.toLowerCase().includes(lowerQuery)) ||
+                snippet.description.toLowerCase().includes(lowerQuery);
+            const matchesTags = tags.length === 0 || tags.every(tag => snippet.tags.includes(tag));
+            return matchesQuery && matchesTags;
+        });
+    }
+}

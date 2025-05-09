@@ -1,0 +1,27 @@
+// ts/ExportManager.ts
+import { Snippet } from './types';
+
+export class ExportManager {
+    public exportSnippet(snippet: Snippet): void {
+        const { title, code, language } = snippet;
+        const filename = `${title.replace(/\s+/g, '_')}.${this.getFileExtension(language)}`;
+        const blob = new Blob([code], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    private getFileExtension(language: string): string {
+        const extMap: Record<string, string> = {
+            python: 'py',
+            javascript: 'js',
+            markup: 'html',
+            sql: 'sql',
+            css: 'css'
+        };
+        return extMap[language.toLowerCase()] || 'txt';
+    }
+}
