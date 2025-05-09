@@ -1,0 +1,71 @@
+To fulfill the requirements of an offline-only code snippet manager built as a static website using HTML, CSS, and TypeScript , we have structured the solution into modular components that align with best practices in architecture, accessibility, and maintainability.
+
+code-snippet-manager/
+├── index.html
+├── styles.css
+├── prism.css
+├── prism.js
+├── ts/
+│   ├── types.ts
+│   ├── StorageManager.ts
+│   ├── UIManager.ts
+│   ├── ExportManager.ts
+│   ├── SearchManager.ts
+│   └── main.ts
+├── dist/
+│   └── main.js
+├── tsconfig.json
+└── README.md
+
+🧠 Core Components
+1. StorageManager.ts
+Handles all interactions with localStorage, including adding, updating, deleting, and retrieving snippets.
+
+2. UIManager.ts
+Manages rendering and user interaction for the snippet list, form, and code display.
+
+3. ExportManager.ts
+Handles exporting a snippet to a downloadable file.
+
+4. SearchManager.ts
+Optional utility class for filtering logic (currently handled inline in UIManager for simplicity).
+
+5. Types and Main Entry
+
+🛠️ Build Process
+tsconfig.json
+
+Compile TypeScript
+
+📖 README.md
+Code Snippet Manager
+An offline code snippet manager built with TypeScript, HTML, and Prism.js.
+
+Features
+Store, tag, search, and retrieve code snippets.
+Syntax highlighting using Prism.js.
+Export snippets as runnable .py, .js, .html, etc.
+Fully offline-capable, uses browser localStorage.
+
+Build
+Install TypeScript:
+Compile:
+
+Dependencies
+Prism.js (download and place in root)
+Prism CSS (same)
+Future Enhancements
+Snippet versioning
+Cloud sync (via PWA + Service Workers)
+Tag management (rename, delete)
+Dark mode
+Architecture Decisions
+Modular Design : Separated concerns for scalability.
+LocalStorage : No external dependencies, ideal for offline use.
+Prism.js : Lightweight, supports many languages, and integrates easily.
+✅ Accessibility & UX
+Semantic HTML (<article>, <section>, <nav>)
+ARIA labels and roles for screen readers
+Keyboard navigation support
+Tabindex and focus styles for interactive elements
+This architecture ensures a clean, extensible, and maintainable foundation for future development.
